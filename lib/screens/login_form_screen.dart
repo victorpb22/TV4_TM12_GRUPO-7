@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../widgets/primary_text_field.dart';
+import '../widgets/primary_button.dart';
 import 'home_screen.dart';
 
 class LoginFormScreen extends StatefulWidget {
-  static const String routeName = '/login_form';
+  static const String routeName = '/login-form';
 
   const LoginFormScreen({super.key});
 
@@ -11,10 +15,10 @@ class LoginFormScreen extends StatefulWidget {
 }
 
 class _LoginFormScreenState extends State<LoginFormScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -23,104 +27,70 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
     super.dispose();
   }
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inicio de sesión exitoso ')),
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final pass = _passwordController.text.trim();
+
+    if (email.isEmpty || pass.isEmpty) {
+      _showSnack('Ingresa correo y contraseña');
+      return;
+    }
+
+    try {
+      setState(() => _isLoading = true);
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: pass,
       );
 
+      _showSnack('Inicio de sesión correcto');
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+    } on FirebaseAuthException catch (e) {
+      String msg = 'Error al iniciar sesión';
+      if (e.code == 'user-not-found') {
+        msg = 'Usuario no encontrado';
+      } else if (e.code == 'wrong-password') {
+        msg = 'Contraseña incorrecta';
+      }
+      _showSnack(msg);
+    } catch (e) {
+      _showSnack('Error inesperado: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Iniciar sesión'), centerTitle: true),
+      appBar: AppBar(title: const Text('Iniciar sesión')),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 20),
-              const Text(
-                'Bienvenido de nuevo',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Correo electrónico',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Ingresa tu correo';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Ingresa un correo válido';
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 20),
-
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Contraseña',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Ingresa tu contraseña';
-                  }
-                  if (value.length < 6) {
-                    return 'Mínimo 6 caracteres';
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 30),
-
-              SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: _login,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.brown,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    'Iniciar sesión',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              const Center(
-                child: Text(
-                  'Demo: solo valida campos y entra al Home',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ),
-            ],
-          ),
+        child: Column(
+          children: [
+            PrimaryTextField(
+              label: 'Email',
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 16),
+            PrimaryTextField(
+              label: 'Contraseña',
+              controller: _passwordController,
+              obscureText: true,
+            ),
+            const SizedBox(height: 24),
+            PrimaryButton(
+              text: _isLoading ? 'Ingresando...' : 'Iniciar sesión',
+              onPressed: _isLoading ? null : _login,
+            ),
+          ],
         ),
       ),
     );

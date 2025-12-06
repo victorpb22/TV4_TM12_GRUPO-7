@@ -1,72 +1,71 @@
 import 'package:flutter/material.dart';
 
 import 'about_screen.dart';
-import 'contact_screen.dart';
-import 'booking_screen.dart';
 import 'products_list_screen.dart';
+import 'booking_screen.dart';
+import 'contact_screen.dart';
 import '../admin/admin_home_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String routeName = '/home';
 
-  const HomeScreen({super.key});
+  /// Si es true, solo se muestran Quiénes somos y Catálogo.
+  final bool isGuest;
+
+  const HomeScreen({super.key, this.isGuest = false});
 
   @override
   Widget build(BuildContext context) {
-    final options = <_HomeOption>[
+    // Todas las opciones disponibles
+    final allOptions = <_HomeOption>[
       _HomeOption(
+        icon: Icons.storefront_outlined,
         title: 'Quiénes somos',
         subtitle: 'Conoce nuestra historia y misión',
-        icon: Icons.storefront,
         onTap: () => Navigator.pushNamed(context, AboutScreen.routeName),
       ),
       _HomeOption(
+        icon: Icons.category_outlined,
         title: 'Catálogo de artesanías',
         subtitle: 'Explora productos por categoría',
-        icon: Icons.category,
         onTap: () => Navigator.pushNamed(context, ProductsListScreen.routeName),
       ),
       _HomeOption(
+        icon: Icons.shopping_bag_outlined,
         title: 'Reserva / Pedido',
         subtitle: 'Solicita productos personalizados',
-        icon: Icons.shopping_bag,
         onTap: () => Navigator.pushNamed(context, BookingScreen.routeName),
       ),
       _HomeOption(
+        icon: Icons.mail_outline,
         title: 'Contacto',
         subtitle: 'Escríbenos tus dudas o comentarios',
-        icon: Icons.contact_mail,
         onTap: () => Navigator.pushNamed(context, ContactScreen.routeName),
       ),
       _HomeOption(
+        icon: Icons.admin_panel_settings_outlined,
         title: 'Administrador',
         subtitle: 'Gestión de productos y clientes',
-        icon: Icons.admin_panel_settings,
         onTap: () => Navigator.pushNamed(context, AdminHomeScreen.routeName),
       ),
     ];
 
+    // Si es invitado, solo mostramos las dos primeras opciones
+    final options = isGuest ? allOptions.take(2).toList() : allOptions;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Artesanías App'),
-        centerTitle: true,
-        leading: Navigator.canPop(context)
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
-              )
-            : null,
-      ),
+      appBar: AppBar(title: const Text('Artesanías App'), centerTitle: true),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: options.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final item = options[index];
           return Card(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
+            elevation: 1,
             child: ListTile(
               leading: Icon(item.icon),
               title: Text(item.title),
@@ -82,15 +81,15 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _HomeOption {
+  final IconData icon;
   final String title;
   final String subtitle;
-  final IconData icon;
   final VoidCallback onTap;
 
-  const _HomeOption({
+  _HomeOption({
+    required this.icon,
     required this.title,
     required this.subtitle,
-    required this.icon,
     required this.onTap,
   });
 }

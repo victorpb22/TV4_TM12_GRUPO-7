@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'admin_product_form.dart';
-import 'admin_clients_screen.dart';
+import 'admin_clients_crud_screen.dart'; // 👈 IMPORTANTE
 
 class AdminHomeScreen extends StatelessWidget {
   static const String routeName = '/admin';
@@ -31,7 +31,13 @@ class AdminHomeScreen extends StatelessWidget {
             title: const Text('Clientes registrados'),
             subtitle: const Text('Ver y gestionar clientes'),
             onTap: () {
-              Navigator.pushNamed(context, AdminClientsScreen.routeName);
+              // 👇 AQUÍ YA NO USAMOS pushNamed
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AdminClientsCrudScreen(),
+                ),
+              );
             },
           ),
         ],

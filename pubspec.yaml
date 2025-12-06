@@ -11,7 +11,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  
   cupertino_icons: ^1.0.8
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.7.0
+  cloud_firestore: ^5.4.0 
 
 dev_dependencies:
   flutter_test:
@@ -24,4 +28,4 @@ flutter:
 
   assets:
     - assets/images/login_artesanias.jpg
-
+    - assets/images/bisuteria_artesania.jpg

@@ -88,21 +88,28 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const Spacer(), // Empuja el texto hacia abajo un poquito
-                    // Texto "Continuar como invitado"
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, HomeScreen.routeName);
-                        },
-                        child: const Text(
+                    // Botón / texto "Continuar como invitado"
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const HomeScreen(
+                              isGuest: true, // 👈 AQUÍ SOLO ESTO, nada más
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
                           'Continuar como invitado',
                           style: TextStyle(
+                            fontSize: 14,
                             color: Colors.green,
-                            fontSize: 16, // un poco más grande
                             decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.w500,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),

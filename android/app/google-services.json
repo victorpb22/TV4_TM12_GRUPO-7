@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "73936367628",
+    "project_id": "venta-de-artesanias-887e1",
+    "storage_bucket": "venta-de-artesanias-887e1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:73936367628:android:a1d5d008fa2cb62e37fe29",
+        "android_client_info": {
+          "package_name": "com.example.venta_de_artesanias"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6xzkxUcH9sYA9gqI9lFhoXmfK0C3iOZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
